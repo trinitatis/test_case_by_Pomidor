@@ -1,7 +1,6 @@
 from base import *
 
 
-class B(First, Second):
-
-    def __init__(self, i: int | None = None):
+class B(Parent):
+    def __init__(self, i: int  | None = None) -> None:
         super().__init__(i)

@@ -1,90 +1,44 @@
-'''
-    Parent
-    /   \
-First    Second
-    \   /
-     A|B
-'''
 class MyError(Exception):
     def __str__(self):
         return "Error text"
 
+
+class First:  pass
+
+
+class Second:   pass
+
+
 class Parent:
-    def __init__(self, i: int | None, first: bool = False) -> None:
-        if i == None: i = 3
+    instances = False
+    
+    def __init__(self, i: int  | None) -> None:
+        ''' Dinamic rebuilding the inheritance hierarchy:
+        first created <Parent> instance will also be <First> instance,
+        The next <Parent> instance will be <Second> instance.
+        '''
+        cls_base = self.__class__.__base__
+        if not Parent.instances:
+            Parent.instances = True        
+            self.__class__.__bases__ = (First, cls_base)
+        else:
+            self.__class__.__bases__ = (Second, cls_base)
+
+        if not i: i = 3
         self.i = i
-        self.first = first
 
-    def fnc(self, arg_1: int | None = None,
-                  arg_2: int | None  = None) -> int:
-        if arg_1 == None: arg_1 = 1
-        if arg_2 == None: arg_2 = arg_1
-        if arg_1 == 7: raise MyError
-        return arg_1 * arg_2 * self.i
+  
+    def fnc(self, arg1: int = 1, arg2: int | None = None) -> int:
+        if not arg2:
+            arg2 = arg1
 
-    @property
+        if arg1 == 7: raise MyError
+            
+        return arg1 * arg2 * self.i
+
     def isFirst(self):
-        return self._isFirst
-
+        return isinstance(self, First)
+    
     @property
     def isSecond(self):
-        return self._isSecond
-
-    def _isFirst(self):
-        return self.first
-
-    def _isSecond(self):
-        return not self.first
-
-   
-class First(Parent):
-    instances = 0
-    def __init__(self, *args, **kwargs):
-        first = False
-        if not First.instances:
-            first = True
-            First.instances += 1
-        super().__init__(*args, first, **kwargs)
-
-
-class Second(Parent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return isinstance(self, Second)
